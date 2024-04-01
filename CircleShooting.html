@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        .circle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            border-radius: 50%;
+            animation: color-change 1s infinite;
+            transition: all 0.5s ease;
+        }
+
+        @keyframes color-change {
+            0% { background-color: red; }
+            25% { background-color: yellow; }
+            50% { background-color: blue; }
+            75% { background-color: green; }
+            100% { background-color: red; }
+        }
+
+        #leaderboard {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+
+        #timer {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Circle Shooting Game</h1>
+        <button id="start" class="btn btn-primary">Start</button>
+        <button id="reset" class="btn btn-secondary">Reset</button>
+        <div id="leaderboard" class="mt-4">
+            <h2>Leaderboard</h2>
+            <p id="score">Score: 0</p>
+        </div>
+        <h2 id="timer" class="mt-4">Time Remaining: 5:00</h2>
+    </div>
+
+    <script>
+        var score = 0;
+        var timer;
+        var gameDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
+        var countdown = gameDuration / 1000; // countdown time in seconds
+        var countdownDisplay = document.getElementById("timer");
+        var scoreDisplay = document.getElementById("score");
+
+        function createCircle() {
+            var circle = document.createElement("div");
+            circle.className = "circle";
+            circle.style.top = Math.random() * window.innerHeight + "px";
+            circle.style.left = Math.random() * window.innerWidth + "px";
+            circle.addEventListener("click", shootCircle);
+            document.body.appendChild(circle);
+        }
+
+        function shootCircle(event) {
+            event.target.remove();
+            score++;
+            scoreDisplay.textContent = "Score: " + score;
+            if (!timer) {
+                timer = setInterval(updateTimer, 1000);
+            }
+            createCircle();
+        }
+
+        function updateTimer() {
+            var minutes = Math.floor(countdown / 60);
+            var seconds = countdown % 60;
+            countdownDisplay.textContent = "Time Remaining: " + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+            countdown--;
+            if (countdown < 0) {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            document.querySelectorAll('.circle').forEach(circle => circle.remove());
+            clearInterval(timer);
+            timer = null;
+            countdown = gameDuration / 1000;
+            countdownDisplay.textContent = "Time Remaining: 5:00";
+        }
+
+        document.getElementById("reset").addEventListener("click", function() {
+            endGame();
+            score = 0;
+            scoreDisplay.textContent = "Score: 0";
+        });
+
+        document.getElementById("start").addEventListener("click", function() {
+            if (!timer) {
+                createCircle();
+            }
+        });
+    </script>
+</body>
+</html>
